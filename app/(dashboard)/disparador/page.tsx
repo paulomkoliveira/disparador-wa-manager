@@ -152,7 +152,8 @@ export default function DisparadorPage() {
                    campaign_id: campaign.id,
                    phone: phone,
                    content: personalizedMessage,
-                   status: 'sent'
+                   status: 'sent',
+                   type: 'whatsapp'
                 }])
             } else {
                 // Envio Real de E-mail via API
@@ -173,7 +174,8 @@ export default function DisparadorPage() {
                    campaign_id: campaign.id,
                    phone: list[i], // Guardamos o email no campo phone por simplicidade ou poderiamos ter um campo email
                    content: message,
-                   status: 'sent'
+                   status: 'sent',
+                   type: 'email'
                 }])
             }
 

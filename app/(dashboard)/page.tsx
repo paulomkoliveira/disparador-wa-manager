@@ -13,7 +13,8 @@ import {
   Clock, 
   ArrowUpRight,
   ShieldCheck,
-  Activity
+  Activity,
+  Smartphone
 } from 'lucide-react'
 
 export default function Dashboard() {
@@ -33,12 +34,13 @@ export default function Dashboard() {
 
   const fetchStats = async () => {
     const { count: leadsCount } = await supabase.from('leads').select('*', { count: 'exact', head: true })
-    const { count: msgsCount } = await supabase.from('sent_messages').select('*', { count: 'exact', head: true })
+    const { count: waCount } = await supabase.from('sent_messages').select('*', { count: 'exact', head: true }).eq('type', 'whatsapp')
+    const { count: emailCount } = await supabase.from('sent_messages').select('*', { count: 'exact', head: true }).eq('type', 'email')
     
     setStats({
       leads: leadsCount || 0,
-      messages: msgsCount || 0,
-      emails: 0,
+      messages: waCount || 0,
+      emails: emailCount || 0,
       apiStatus: 'Online'
     })
 
@@ -124,11 +126,13 @@ export default function Dashboard() {
                 </div>
               ) : recentActivity.map((act, i) => (
                 <div key={i} className="flex gap-5 group cursor-pointer">
-                   <div className="w-12 h-12 bg-zinc-900 rounded-2xl flex items-center justify-center shadow-lg group-hover:bg-emerald-600 transition-colors shrink-0">
-                      <Zap className="w-5 h-5 text-white" />
+                   <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg transition-colors shrink-0 ${act.type === 'email' ? 'bg-indigo-600 group-hover:bg-indigo-500' : 'bg-zinc-900 group-hover:bg-emerald-600'}`}>
+                      {act.type === 'email' ? <Mail className="w-5 h-5 text-white" /> : <Smartphone className="w-5 h-5 text-white" />}
                    </div>
                    <div className="border-b border-zinc-100 pb-5 w-full">
-                      <p className="text-sm font-bold text-zinc-800 tracking-tight group-hover:text-emerald-700 transition-colors">Disparo para {act.phone}</p>
+                      <p className="text-sm font-bold text-zinc-800 tracking-tight transition-colors">
+                        Disparo via {act.type === 'email' ? 'E-mail' : 'WhatsApp'} para {act.phone}
+                      </p>
                       <p className="text-[10px] font-black text-zinc-400 uppercase tracking-widest mt-1">
                         {new Date(act.created_at).toLocaleTimeString()}
                       </p>

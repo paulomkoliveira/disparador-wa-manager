@@ -26,31 +26,39 @@ export async function middleware(request: NextRequest) {
           response.cookies.set({ name, value, ...options })
         },
         remove(name: string, options: CookieOptions) {
-          request.cookies.set({ name, value, ...options })
+          request.cookies.set({ name, value: '', ...options })
           response = NextResponse.next({
             request: {
               headers: request.headers,
             },
           })
-          response.cookies.set({ name, value, ...options })
+          response.cookies.set({ name, value: '', ...options })
         },
       },
     }
   )
 
-  const { data: { user } } = await supabase.auth.getUser()
+  try {
+    const { data: { user } } = await supabase.auth.getUser()
 
-  // Se não estiver logado e tentar acessar qualquer rota privada (/, /disparador, /email, /crm, /chat)
-  if (!user && !request.nextUrl.pathname.startsWith('/login') && request.nextUrl.pathname !== '/auth/callback') {
-    return NextResponse.redirect(new URL('/login', request.url))
+    // Se não estiver logado e tentar acessar qualquer rota privada
+    if (!user && !request.nextUrl.pathname.startsWith('/login') && request.nextUrl.pathname !== '/auth/callback') {
+      return NextResponse.redirect(new URL('/login', request.url))
+    }
+
+    // Se estiver logado e tentar acessar o login
+    if (user && request.nextUrl.pathname.startsWith('/login')) {
+      return NextResponse.redirect(new URL('/', request.url))
+    }
+
+    return response
+  } catch (e) {
+    // Se falhar o getUser (ex: conexão offline ou configs inválidas), redireciona para login apenas se não estiver lá
+    if (!request.nextUrl.pathname.startsWith('/login')) {
+      return NextResponse.redirect(new URL('/login', request.url))
+    }
+    return response
   }
-
-  // Se estiver logado e tentar acessar o login
-  if (user && request.nextUrl.pathname.startsWith('/login')) {
-    return NextResponse.redirect(new URL('/', request.url))
-  }
-
-  return response
 }
 
 export const config = {

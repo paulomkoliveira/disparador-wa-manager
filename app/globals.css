@@ -1,19 +1,123 @@
+/* Import fonts primeiro - antes do @tailwind */
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,300;0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;0,14..32,900;1,14..32,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 255, 255, 255;
-  --background-start-rgb: 2, 6, 23;
-  --background-end-rgb: 0, 0, 0;
+@layer base {
+  /* Reset base para foco no tema Light */
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    /* Tema Light Premium - cinza suave de fundo */
+    @apply bg-[#f4f6f8] text-zinc-900;
+    font-family: 'Inter', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    font-feature-settings: "rlig" 1, "calt" 1, "kern" 1;
+    letter-spacing: -0.01em;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Plus Jakarta Sans', 'Inter', sans-serif;
+    font-feature-settings: "ss01" 1;
+    letter-spacing: -0.02em;
+  }
+
+  /* Contraste para inputs e seleção */
+  input, textarea, select {
+    @apply text-zinc-900;
+  }
+
+  /* Links */
+  a {
+    @apply transition-colors;
+  }
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+@layer components {
+  /* Cards com fundo branco e sombra suave */
+  .card {
+    @apply bg-white border border-zinc-200 rounded-2xl shadow-sm;
+  }
+
+  /* Botão primário */
+  .btn-primary {
+    @apply bg-emerald-500 hover:bg-emerald-400 text-white font-bold rounded-xl px-6 py-3 transition-all shadow-md shadow-emerald-500/10 active:scale-95;
+  }
+
+  /* Label de formulário */
+  .form-label {
+    @apply text-[11px] font-bold text-zinc-500 uppercase tracking-widest block mb-1.5;
+  }
+
+  /* Input padrão */
+  .form-input {
+    @apply w-full bg-zinc-50 border border-zinc-200 rounded-xl p-3.5 text-sm font-medium text-zinc-800 focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 outline-none transition-all placeholder:text-zinc-300;
+  }
+
+  /* Header do dashboard */
+  .dash-header {
+    @apply bg-white border-b border-zinc-100 shadow-sm shadow-zinc-100/50;
+  }
+
+  /* Sidebar */
+  .dash-sidebar {
+    @apply bg-[#0a1a14] border-r border-emerald-900/10;
+  }
+
+  /* Glass card - mantido para compatibilidade */
+  .glass-card {
+    @apply bg-white border border-zinc-200 shadow-xl shadow-zinc-200/50;
+  }
+
+  .glass-header {
+    @apply bg-white border-b border-zinc-100;
+  }
+}
+
+/* ─── Scrollbars ─── */
+.scrollbar-hidden {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+}
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 9999px;
+}
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #10b981;
+}
+
+/* ─── Animações ─── */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* ─── Seleção de texto ─── */
+::selection {
+  background-color: #d1fae5;
+  color: #065f46;
 }

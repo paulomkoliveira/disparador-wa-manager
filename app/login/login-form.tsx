@@ -2,8 +2,8 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
-import { Mail, Lock, Loader2, MessageSquare, ArrowRight } from 'lucide-react'
+import { createClient } from '@/lib/supabase'
+import { Mail, Lock, Loader2, MessageSquare, ArrowRight, AlertTriangle } from 'lucide-react'
 
 export default function LoginForm() {
   const [email, setEmail] = useState('')
@@ -11,72 +11,88 @@ export default function LoginForm() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
-  const supabase = createClientComponentClient()
+  const supabase = createClient()
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const [isSignUp, setIsSignUp] = useState(false)
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     setError(null)
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
+    try {
+      const { data, error } = isSignUp 
+        ? await supabase.auth.signUp({ email, password })
+        : await supabase.auth.signInWithPassword({ email, password })
 
-    if (error) {
-      setError('E-mail ou senha inválidos. Tente novamente.')
+      if (error) {
+        setError(error.message)
+        setLoading(false)
+        return
+      }
+
+      if (isSignUp) {
+        alert('Conta criada com sucesso! Você já pode fazer o login (certifique-se de que a confirmação de e-mail está desativada no Supabase ou use o login direto se aparecer logado).')
+        setIsSignUp(false)
+        setLoading(false)
+      } else if (data.session) {
+        router.push('/')
+        router.refresh()
+      }
+    } catch (err) {
+      setError('Ocorreu um erro inesperado. Tente novamente.')
       setLoading(false)
-    } else {
-      router.push('/')
-      router.refresh()
     }
   }
 
   return (
-    <div className="w-full max-w-md">
-      <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 p-10 rounded-3xl shadow-2xl relative overflow-hidden group">
-        <div className="absolute -top-24 -right-24 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl group-hover:bg-emerald-500/20 transition-all duration-500"></div>
-        
-        <div className="flex justify-center mb-8">
-          <div className="w-16 h-16 bg-emerald-500 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/20 transform hover:scale-105 transition-transform">
-            <MessageSquare className="text-white w-8 h-8" />
+    <div className="w-full max-w-md animate-in zoom-in-95 duration-700">
+      <div className="bg-slate-900/40 backdrop-blur-3xl border border-slate-800 p-12 rounded-[40px] shadow-2xl relative overflow-hidden group">
+        {/* Logo Section */}
+        <div className="flex flex-col items-center mb-12">
+          <div className="w-20 h-20 bg-emerald-500 rounded-3xl flex items-center justify-center shadow-2xl shadow-emerald-500/20 transform hover:rotate-12 transition-all duration-500 mb-6 group-hover:scale-110">
+            <MessageSquare className="text-white w-10 h-10" />
           </div>
+          <h1 className="text-4xl font-bold text-white mb-2 tracking-tight">
+            {isSignUp ? 'Criar Conta' : 'Login Portal'}
+          </h1>
+          <p className="text-slate-500 text-xs font-bold uppercase tracking-[3px]">WA Manager Premium</p>
         </div>
 
-        <div className="text-center mb-10">
-          <h1 className="text-3xl font-bold text-white mb-2">Bem-vindo</h1>
-          <p className="text-slate-400 text-sm">Acesse o seu painel WA Manager</p>
-        </div>
-
-        <form onSubmit={handleLogin} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6">
           {error && (
-            <div className="bg-red-500/10 border border-red-500/20 text-red-500 p-3 rounded-xl text-xs text-center font-medium animate-pulse">
-              {error}
+            <div className="bg-red-500/10 border border-red-500/20 text-red-500 p-4 rounded-2xl text-xs flex items-center gap-3 animate-head-shake">
+              <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+              <span className="font-medium text-center">{error}</span>
             </div>
           )}
 
           <div className="space-y-4">
             <div className="relative group/field">
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within/field:text-emerald-500 transition-colors" />
+              <div className="absolute left-5 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center text-slate-500 group-focus-within/field:text-emerald-500 transition-colors">
+                <Mail className="w-5 h-5" />
+              </div>
               <input 
                 type="email" 
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 placeholder="E-mail profissional" 
-                className="w-full bg-slate-950/50 border border-slate-800 rounded-2xl py-4 pl-12 pr-4 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all"
+                className="w-full bg-slate-950/40 border border-slate-800 rounded-2xl py-5 pl-14 pr-4 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/10 transition-all duration-300"
               />
             </div>
 
             <div className="relative group/field">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within/field:text-emerald-500 transition-colors" />
+              <div className="absolute left-5 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center text-slate-500 group-focus-within/field:text-emerald-500 transition-colors">
+                <Lock className="w-5 h-5" />
+              </div>
               <input 
                 type="password" 
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                placeholder="Sua senha" 
-                className="w-full bg-slate-950/50 border border-slate-800 rounded-2xl py-4 pl-12 pr-4 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/20 transition-all"
+                placeholder="Sua senha de acesso" 
+                className="w-full bg-slate-950/40 border border-slate-800 rounded-2xl py-5 pl-14 pr-4 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-emerald-500/50 focus:ring-4 focus:ring-emerald-500/10 transition-all duration-300"
               />
             </div>
           </div>
@@ -84,20 +100,34 @@ export default function LoginForm() {
           <button 
             type="submit" 
             disabled={loading}
-            className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-4 rounded-2xl transition-all shadow-lg shadow-emerald-500/20 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed group/btn overflow-hidden relative"
+            className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-[2px] py-6 rounded-2xl transition-all shadow-2xl shadow-emerald-500/20 active:scale-[0.97] disabled:opacity-50 disabled:cursor-not-allowed group/btn overflow-hidden relative mt-4"
           >
-            <div className="relative z-10 flex items-center justify-center gap-2">
+            <div className="relative z-10 flex items-center justify-center gap-3">
               {loading ? (
                 <Loader2 className="w-5 h-5 animate-spin" />
               ) : (
                 <>
-                  <span>ACESSAR DASHBOARD</span>
-                  <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  <span>{isSignUp ? 'Criar minha conta' : 'Autenticar Sistema'}</span>
+                  <ArrowRight className="w-5 h-5 group-hover/btn:translate-x-2 transition-transform" />
                 </>
               )}
             </div>
           </button>
+
+          <div className="text-center">
+            <button 
+              type="button"
+              onClick={() => setIsSignUp(!isSignUp)}
+              className="text-[10px] font-bold text-slate-500 hover:text-emerald-500 uppercase tracking-widest transition-colors"
+            >
+              {isSignUp ? 'Já tenho uma conta. Fazer Login' : 'Não tem conta? Criar conta agora'}
+            </button>
+          </div>
         </form>
+
+        <p className="text-center mt-10 text-[10px] text-slate-600 font-bold uppercase tracking-widest">
+          © 2026 WA Manager • Todos os direitos reservados
+        </p>
       </div>
     </div>
   )

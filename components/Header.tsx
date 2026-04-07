@@ -1,35 +1,40 @@
 'use client'
 
-import { Bell, Search, User } from 'lucide-react'
+import { Bell, Search, User, ChevronDown, Menu } from 'lucide-react'
+import { useState } from 'react'
 
-export default function Header({ title }: { title: string }) {
+export default function Header() {
+  const [active, setActive] = useState(false)
+
   return (
-    <header className="h-16 bg-slate-900 border-b border-slate-800 px-8 flex items-center justify-between sticky top-0 z-40">
-      <div className="flex items-center gap-4">
-        <h2 className="text-white font-semibold text-lg">{title}</h2>
-        <div className="h-4 w-px bg-slate-800 hidden sm:block"></div>
-        <div className="relative hidden md:block">
-          <Search className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
-          <input 
-            type="text" 
-            placeholder="Buscar..." 
-            className="bg-slate-900 border border-slate-800 rounded-lg py-1.5 pl-10 pr-4 text-sm text-slate-300 focus:outline-none focus:border-emerald-500/50 transition-colors"
-          />
-        </div>
+    <header className="h-24 sticky top-0 z-40 flex items-center justify-between px-10 bg-white border-b border-zinc-100 shadow-sm shadow-zinc-200/20">
+      {/* Search Bar - Minimalist (Light) */}
+      <div className="relative group max-w-lg w-full">
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 group-focus-within:text-emerald-500 transition-colors" />
+        <input 
+          type="text" 
+          placeholder="Pesquisar nos módulos..." 
+          className="w-full bg-zinc-50 border border-zinc-100 rounded-2xl py-3 pl-12 pr-6 text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:border-emerald-500/30 focus:bg-white transition-all focus:ring-4 focus:ring-emerald-500/5 shadow-inner"
+        />
       </div>
 
-      <div className="flex items-center gap-4">
-        <button className="p-2 text-slate-400 hover:text-emerald-500 transition-colors relative">
-          <Bell className="w-5 h-5" />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-emerald-500 rounded-full border-2 border-slate-900"></span>
+      <div className="flex items-center gap-6">
+        {/* Notifications */}
+        <button className="relative p-3 bg-white border border-zinc-100 rounded-2xl hover:bg-zinc-50 transition-all group">
+          <Bell className="w-5 h-5 text-zinc-400 group-hover:text-emerald-500" />
+          <span className="absolute top-3.5 right-3.5 w-2 h-2 bg-emerald-500 border-2 border-white rounded-full shadow-lg" />
         </button>
-        <div className="h-4 w-px bg-slate-800"></div>
-        <button className="flex items-center gap-2 p-1.5 rounded-lg bg-slate-800/50 border border-slate-800 hover:bg-slate-800 transition-colors group">
-          <div className="w-7 h-7 rounded-md bg-emerald-500/20 flex items-center justify-center">
-            <User className="w-4 h-4 text-emerald-500" />
+
+        {/* User Profile */}
+        <div className="flex items-center gap-4 pl-6 border-l border-zinc-100">
+          <div className="flex flex-col items-end">
+            <span className="text-xs font-black text-zinc-900 uppercase tracking-widest">Admin Manager</span>
+            <span className="text-[9px] font-black text-emerald-600 uppercase tracking-tighter">Sua Empresa LTDA</span>
           </div>
-          <span className="text-xs font-semibold text-slate-300 group-hover:text-white px-1">Minha Conta</span>
-        </button>
+          <div className="w-12 h-12 bg-white rounded-2xl border border-zinc-100 flex items-center justify-center group cursor-pointer hover:border-emerald-500/30 transition-all shadow-xl shadow-zinc-200/20 active:scale-95">
+             <User className="w-5 h-5 text-zinc-400 group-hover:text-emerald-500" />
+          </div>
+        </div>
       </div>
     </header>
   )

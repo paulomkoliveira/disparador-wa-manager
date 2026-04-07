@@ -1,6 +1,5 @@
-export const dynamic = 'force-dynamic'
-
 'use client'
+export const dynamic = 'force-dynamic'
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
@@ -353,4 +352,3 @@ export default function KanbanPage() {
 function Check({ className }: { className?: string }) {
   return <Plus className={className} />
 }
-

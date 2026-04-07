@@ -1,6 +1,5 @@
-export const dynamic = 'force-dynamic'
-
 'use client'
+export const dynamic = 'force-dynamic'
 
 import { useState, useEffect, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
@@ -388,4 +387,3 @@ export default function ChatPage() {
     </div>
   )
 }
-

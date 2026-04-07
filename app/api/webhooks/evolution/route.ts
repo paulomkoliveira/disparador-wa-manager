@@ -1,12 +1,15 @@
 import { createClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 
-// Configuração do Supabase (Server Side)
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY! // Necessário Service Role para bypass RLS se necessário
-const supabase = createClient(supabaseUrl, supabaseServiceKey)
+// Cliente do Supabase (Lazy load para evitar erro no build time)
+const getSupabase = () => {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY ?? ''
+  return createClient(url, key)
+}
 
 export async function POST(req: Request) {
+  const supabase = getSupabase()
   try {
     const body = await req.json()
     const { event, data } = body

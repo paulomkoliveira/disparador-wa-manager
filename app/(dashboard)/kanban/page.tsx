@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -351,3 +353,4 @@ export default function KanbanPage() {
 function Check({ className }: { className?: string }) {
   return <Plus className={className} />
 }
+

@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic'
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { LayoutGrid, MoreHorizontal, Plus, Search, User, MessageCircle, Calendar, Loader2, X, Hash, Phone, MapPin, Trash2, Edit2 } from 'lucide-react'
+import { LayoutGrid, MoreHorizontal, Plus, Search, User, MessageCircle, Calendar, Loader2, X, Hash, Phone, MapPin, Trash2, Edit2, Mail } from 'lucide-react'
 
 export default function KanbanPage() {
   const [columns, setColumns] = useState<any[]>([])
@@ -205,12 +205,23 @@ export default function KanbanPage() {
                             </div>
                             
                             <div className="flex items-center gap-4">
-                                <div className="w-12 h-12 bg-white rounded-2xl border border-zinc-100 flex items-center justify-center shadow-sm">
-                                  <User className="w-5 h-5 text-zinc-300 group-hover/card:text-emerald-500 transition-colors" />
-                                </div>
                                 <div>
                                   <h4 className="font-bold text-zinc-800 tracking-tight">{item.name}</h4>
-                                  <p className="text-[11px] font-bold text-zinc-400">{item.phone}</p>
+                                  <div className="flex flex-col gap-1 mt-1">
+                                    <p className="text-[11px] font-bold text-zinc-400 flex items-center gap-1">
+                                       <Phone className="w-3 h-3" /> {item.phone}
+                                    </p>
+                                    {item.email && (
+                                      <p className="text-[10px] font-bold text-zinc-400 flex items-center gap-1">
+                                         <Mail className="w-3 h-3 text-zinc-300" /> {item.email}
+                                      </p>
+                                    )}
+                                    {item.region && (
+                                      <p className="text-[10px] font-bold text-zinc-400 flex items-center gap-1">
+                                         <MapPin className="w-3 h-3 text-zinc-300" /> {item.region}
+                                      </p>
+                                    )}
+                                  </div>
                                 </div>
                             </div>
 
